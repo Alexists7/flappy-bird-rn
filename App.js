@@ -5,9 +5,13 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
+  Button,
+  DevSettings,
+  ImageBackground,
 } from "react-native";
 import Bird from "./components/Bird";
 import Obstacles from "./components/Obstacles";
+import { Audio } from "expo-av";
 
 export default function App() {
   const screenWidth = Dimensions.get("screen").width;
@@ -24,11 +28,97 @@ export default function App() {
   const obstacleWidth = 60;
   const obstacleHeight = 300;
   const gap = 200;
-  const gravity = 3;
   let gameTimerId;
   let obstaclesLeftTimerId;
   let obstaclesLeftTimerIdTwo;
   const [isGameOver, setIsGameOver] = useState(false);
+
+  // wing code
+  const [sound, setSound] = useState();
+
+  async function playWing() {
+    console.log("Loading Sound");
+    const { sound } = await Audio.Sound.createAsync(
+      require("./assets/wing.mp3")
+    );
+    setSound(sound);
+
+    console.log("Playing Sound");
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  //point code
+
+  async function playPoint() {
+    console.log("Loading Sound");
+    const { sound } = await Audio.Sound.createAsync(
+      require("./assets/point.mp3")
+    );
+    setSound(sound);
+
+    console.log("Playing Sound");
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  //hit code
+  async function playHit() {
+    console.log("Loading Sound");
+    const { sound } = await Audio.Sound.createAsync(
+      require("./assets/hit.mp3")
+    );
+    setSound(sound);
+
+    console.log("Playing Sound");
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  //die code
+  async function playDie() {
+    console.log("Loading Sound");
+    const { sound } = await Audio.Sound.createAsync(
+      require("./assets/die.mp3")
+    );
+    setSound(sound);
+
+    console.log("Playing Sound");
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
 
   //start bird falling
   useEffect(() => {
@@ -46,6 +136,7 @@ export default function App() {
   const jump = () => {
     if (!isGameOver && birdBottom < screenHeight) {
       setBirdBottom((birdBottom) => birdBottom + 50);
+      playWing();
     }
   };
 
@@ -63,6 +154,7 @@ export default function App() {
       setObstaclesLeft(screenWidth);
       setObstaclesNegHeight(-Math.random() * 100);
       setScore((score) => score + 1);
+      playPoint();
     }
   }, [obstaclesLeft]);
 
@@ -81,10 +173,12 @@ export default function App() {
       setObstaclesLeftTwo(screenWidth);
       setObstaclesNegHeightTwo(-Math.random() * 100);
       setScore((score) => score + 1);
+      playPoint();
     }
   }, [obstaclesLeftTwo]);
 
   //check for collisions
+  const [collisions, setCollisions] = useState(false);
   useEffect(() => {
     console.log(obstaclesLeft);
     console.log(screenWidth / 2);
@@ -101,6 +195,8 @@ export default function App() {
     ) {
       console.log("game over");
       gameOver();
+      setCollisions(true);
+      playHit();
     }
   });
 
@@ -111,37 +207,74 @@ export default function App() {
     setIsGameOver(true);
   };
 
+  const startReload = () => DevSettings.reload();
+  const backgroundImage = {
+    uri: "https://wallpaperaccess.com/full/4622710.png",
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={jump}>
-      <View style={styles.container}>
-        <Bird birdBottom={birdBottom} birdLeft={birdLeft} />
-        <Text>{score}</Text>
-        <Obstacles
-          color={"red"}
-          obstacleWidth={obstacleWidth}
-          randomBottom={obstaclesNegHeight}
-          obstacleHeight={obstacleHeight}
-          gap={gap}
-          obstaclesLeft={obstaclesLeft}
-        />
-        <Obstacles
-          color={"green"}
-          obstacleWidth={obstacleWidth}
-          randomBottom={obstaclesNegHeightTwo}
-          obstacleHeight={obstacleHeight}
-          gap={gap}
-          obstaclesLeft={obstaclesLeftTwo}
-        />
-      </View>
-    </TouchableWithoutFeedback>
+    <>
+      <TouchableWithoutFeedback onPress={jump}>
+        <View style={styles.container}>
+          <ImageBackground source={backgroundImage} style={styles.image}>
+            <Bird birdBottom={birdBottom} birdLeft={birdLeft} />
+            <Text style={styles.score}>{score}</Text>
+            {isGameOver && (
+              <Button
+                title="Play again"
+                onPress={startReload}
+                color="#24D0E4"
+                style={styles.button}
+              />
+            )}
+            <Obstacles
+              color={"red"}
+              obstacleWidth={obstacleWidth}
+              randomBottom={obstaclesNegHeight}
+              obstacleHeight={obstacleHeight}
+              gap={gap}
+              obstaclesLeft={obstaclesLeft}
+            />
+            <Obstacles
+              color={"green"}
+              obstacleWidth={obstacleWidth}
+              randomBottom={obstaclesNegHeightTwo}
+              obstacleHeight={obstacleHeight}
+              gap={gap}
+              obstaclesLeft={obstaclesLeftTwo}
+            />
+            <View style={styles.bottom} />
+          </ImageBackground>
+        </View>
+        {/* <View style={styles.bottom} /> */}
+      </TouchableWithoutFeedback>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
     justifyContent: "center",
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  score: {
+    zIndex: 2,
+    color: "#fff",
+    fontSize: 40,
+    position: "absolute",
+    top: "10%",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1, height: 4 },
+    textShadowRadius: 5,
+  },
+  button: {
+    backgroundColor: "green",
+    color: "#000",
   },
 });

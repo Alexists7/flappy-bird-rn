@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Image } from "react-native";
 
 const Obstacles = ({
   color,
@@ -9,26 +9,37 @@ const Obstacles = ({
   gap,
   randomBottom,
 }) => {
+  const topPipeImage = {
+    uri:
+      "http://campbell.teachur.com/8thGradeFiles/Scratch/FlappyImages/pipeDown.png",
+  };
   return (
     <>
-      <View
+      <Image
+        source={topPipeImage}
         style={{
           position: "absolute",
-          backgroundColor: color,
+          flex: 1,
           width: obstacleWidth,
-          height: 500,
+          minHeight: 300,
+          top: 0,
           left: obstaclesLeft,
           bottom: randomBottom + obstacleHeight + gap,
+          zIndex: 0,
+          resizeMode: "cover",
         }}
       />
-      <View
+      <Image
+        source={topPipeImage}
         style={{
           position: "absolute",
-          backgroundColor: color,
           width: obstacleWidth,
           height: obstacleHeight,
           left: obstaclesLeft,
           bottom: randomBottom,
+          zIndex: 0,
+          transform: [{ rotate: "180deg" }],
+          resizeMode: "cover",
         }}
       />
     </>
