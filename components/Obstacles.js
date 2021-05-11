@@ -2,7 +2,6 @@ import React from "react";
 import { Image } from "react-native";
 
 const Obstacles = ({
-  color,
   obstaclesLeft,
   obstacleWidth,
   obstacleHeight,
@@ -10,8 +9,7 @@ const Obstacles = ({
   randomBottom,
 }) => {
   const topPipeImage = {
-    uri:
-      "http://campbell.teachur.com/8thGradeFiles/Scratch/FlappyImages/pipeDown.png",
+    uri: "http://campbell.teachur.com/8thGradeFiles/Scratch/FlappyImages/pipeDown.png",
   };
   return (
     <>

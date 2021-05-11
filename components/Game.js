@@ -9,11 +9,11 @@ import {
   DevSettings,
   ImageBackground,
 } from "react-native";
-import Bird from "./components/Bird";
-import Obstacles from "./components/Obstacles";
+import Bird from "./Bird";
+import Obstacles from "./Obstacles";
 import { Audio } from "expo-av";
 
-export default function App() {
+export default function Game() {
   const screenWidth = Dimensions.get("screen").width;
   const screenHeight = Dimensions.get("screen").height;
   const birdLeft = screenWidth / 2;
@@ -36,10 +36,30 @@ export default function App() {
   // wing code
   const [sound, setSound] = useState();
 
+  async function playSwoosh() {
+    console.log("Loading Sound");
+    const { sound } = await Audio.Sound.createAsync(
+      require("../assets/swoosh.mp3")
+    );
+    setSound(sound);
+
+    console.log("Playing Sound");
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
   async function playWing() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("./assets/wing.mp3")
+      require("../assets/wing.mp3")
     );
     setSound(sound);
 
@@ -61,7 +81,7 @@ export default function App() {
   async function playPoint() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("./assets/point.mp3")
+      require("../assets/point.mp3")
     );
     setSound(sound);
 
@@ -82,7 +102,7 @@ export default function App() {
   async function playHit() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("./assets/hit.mp3")
+      require("../assets/hit.mp3")
     );
     setSound(sound);
 
@@ -103,7 +123,7 @@ export default function App() {
   async function playDie() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("./assets/die.mp3")
+      require("../assets/die.mp3")
     );
     setSound(sound);
 
@@ -219,7 +239,10 @@ export default function App() {
     setIsGameOver(true);
   };
 
-  const startReload = () => DevSettings.reload();
+  const startReload = () => {
+    DevSettings.reload();
+    playSwoosh();
+  };
   const backgroundImage = {
     uri: "https://wallpaperaccess.com/full/4622710.png",
   };
@@ -240,7 +263,6 @@ export default function App() {
               />
             )}
             <Obstacles
-              color={"red"}
               obstacleWidth={obstacleWidth}
               randomBottom={obstaclesNegHeight}
               obstacleHeight={obstacleHeight}
@@ -248,14 +270,12 @@ export default function App() {
               obstaclesLeft={obstaclesLeft}
             />
             <Obstacles
-              color={"green"}
               obstacleWidth={obstacleWidth}
               randomBottom={obstaclesNegHeightTwo}
               obstacleHeight={obstacleHeight}
               gap={gap}
               obstaclesLeft={obstaclesLeftTwo}
             />
-            <View style={styles.bottom} />
           </ImageBackground>
         </View>
       </TouchableWithoutFeedback>
