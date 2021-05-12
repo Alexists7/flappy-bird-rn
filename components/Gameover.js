@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 
-export default function Start({ history }) {
+export default function GameOver({ history }) {
   const [sound, setSound] = useState();
 
   async function playSwoosh() {

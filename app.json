@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "flappy-bird-rn",
-    "slug": "flappy-bird-rn",
+    "name": "flappy bird react native",
+    "slug": "flappy-bird-react-native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,6 +27,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Very basic flappy bird game. First react native project."
   }
 }

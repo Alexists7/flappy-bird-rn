@@ -6,14 +6,17 @@ import {
   Text,
   TouchableWithoutFeedback,
   Button,
-  DevSettings,
   ImageBackground,
 } from "react-native";
 import Bird from "./Bird";
 import Obstacles from "./Obstacles";
 import { Audio } from "expo-av";
+import {
+  VastShadow_400Regular,
+  useFonts,
+} from "@expo-google-fonts/vast-shadow";
 
-export default function Game() {
+export default function Game({ history }) {
   const screenWidth = Dimensions.get("screen").width;
   const screenHeight = Dimensions.get("screen").height;
   const birdLeft = screenWidth / 2;
@@ -35,6 +38,10 @@ export default function Game() {
 
   // wing code
   const [sound, setSound] = useState();
+
+  useFonts({
+    VastShadow_400Regular,
+  });
 
   async function playSwoosh() {
     console.log("Loading Sound");
@@ -240,9 +247,10 @@ export default function Game() {
   };
 
   const startReload = () => {
-    DevSettings.reload();
+    history.push("/");
     playSwoosh();
   };
+
   const backgroundImage = {
     uri: "https://wallpaperaccess.com/full/4622710.png",
   };
@@ -253,7 +261,7 @@ export default function Game() {
         <View style={styles.container}>
           <ImageBackground source={backgroundImage} style={styles.image}>
             <Bird birdBottom={birdBottom} birdLeft={birdLeft} />
-            <Text style={styles.score}>{score}</Text>
+            {isGameOver && <Text style={styles.score}>{score}</Text>}
             {isGameOver && (
               <Button
                 title="Play again"
@@ -300,6 +308,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     position: "absolute",
     top: "10%",
+    fontFamily: "VastShadow_400Regular",
     textShadowColor: "#000",
     textShadowOffset: { width: 1, height: 4 },
     textShadowRadius: 5,
